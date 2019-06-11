@@ -1,0 +1,53 @@
+# Orb 'codecov/codecov@1.0.2' resolved to 'codecov/codecov@1.0.2'
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/golang:1.12
+    working_directory: /go/src/github.com/bala-mu/scratchpad
+    environment:
+    - TEST_RESULTS: /tmp/test-results
+    steps:
+    - checkout
+    - run:
+        command: mkdir -p $TEST_RESULTS
+    - restore_cache:
+        keys:
+        - v1-pkg-cache
+    - run:
+        command: go get github.com/lib/pq
+    - run:
+        name: Run unit tests
+        command: |
+          cd  /go/src/github.com/bala-mu/scratchpad/genericds
+          go test -coverprofile=c.out
+          cp c.out ${TEST_RESULTS}/coveragefile.out
+          go tool cover -html=c.out -o ${TEST_RESULTS}/coverage.html
+          #gotestsum --junitfile  tee ${TEST_RESULTS}/unit-tests.xml
+    - save_cache:
+        key: v1-pkg-cache
+        paths:
+        - /go/pkg
+    - store_artifacts:
+        path: /tmp/test-results
+        destination: raw-test-output
+    - store_test_results:
+        path: /tmp/test-results
+    - run:
+        name: Upload Coverage Results
+        command: |
+          bash <(curl -s https://codecov.io/bash) \
+            -f ${TEST_RESULTS}/coveragefile.out \
+            -n ${CIRCLE_BUILD_NUM} \
+            -t ${CODECOV_TOKEN} \
+            -y .codecov.yml \
+            -F  \
+workflows:
+  version: 2
+  workflow:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only:
+            - /feature.*/
