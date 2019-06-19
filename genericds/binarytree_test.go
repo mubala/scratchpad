@@ -75,18 +75,21 @@ func TestBinaryTree_Traverse(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			collected = collected[:0]
 			t.Log("Running inorder ", test.name)
-			if got := test.tree.InorderTraverse(testVisitor); !reflect.DeepEqual(collected, test.inorder) {
-				t.Errorf(" %s Failed  Response: %v  Collected: %v != inorder  %v", test.name, got, collected, test.inorder)
+			test.tree.InorderTraverse(testVisitor)
+			if !reflect.DeepEqual(collected, test.inorder) {
+				t.Errorf(" %s Failed  Response:  Collected: %v != inorder  %v", test.name, collected, test.inorder)
 			}
 			collected = collected[:0]
 			t.Log("Running preorder", test.name)
-			if got := test.tree.PreorderTraverse(testVisitor); !reflect.DeepEqual(collected, test.preorder) {
-				t.Errorf(" %s Failed  Response: %v  Collected: %v != inorder  %v", test.name, got, collected, test.preorder)
+			test.tree.PreorderTraverse(testVisitor)
+			if !reflect.DeepEqual(collected, test.preorder) {
+				t.Errorf(" %s Failed  Response: Collected: %v != inorder  %v", test.name, collected, test.preorder)
 			}
 			collected = collected[:0]
 			t.Log("Running postorder", test.name)
-			if got := test.tree.PostorderTraverse(testVisitor); !reflect.DeepEqual(collected, test.postorder) {
-				t.Errorf(" %s Failed  Response: %v  Collected: %v != inorder  %v", test.name, got, collected, test.postorder)
+			test.tree.PostorderTraverse(testVisitor)
+			if !reflect.DeepEqual(collected, test.postorder) {
+				t.Errorf(" %s Failed  Response: Collected: %v != inorder  %v", test.name, collected, test.postorder)
 			}
 		})
 	}
@@ -111,16 +114,13 @@ func NewIncompatibleBinaryTree() BinaryTree {
 	return &incompatibleTree{}
 }
 
-func (b *incompatibleTree) PreorderTraverse(visitor Visitor) string {
-	return ""
+func (b *incompatibleTree) PreorderTraverse(visitor Visitor) {
 }
 
-func (b *incompatibleTree) InorderTraverse(visitor Visitor) string {
-	return ""
+func (b *incompatibleTree) InorderTraverse(visitor Visitor) {
 }
 
-func (b *incompatibleTree) PostorderTraverse(visitor Visitor) string {
-	return ""
+func (b *incompatibleTree) PostorderTraverse(visitor Visitor) {
 }
 
 func TestBinaryTree_SetChildren(t *testing.T) {
@@ -129,7 +129,6 @@ func TestBinaryTree_SetChildren(t *testing.T) {
 		if err := tree.SetChildren(nil, NewIncompatibleBinaryTree()); err == nil {
 			t.Errorf(" Failed incompatability check ... ")
 		}
-
 		if err := tree.SetChildren(NewIncompatibleBinaryTree(), nil); err == nil {
 			t.Errorf(" Failed incompatability check ... ")
 		}

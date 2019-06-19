@@ -1,9 +1,7 @@
 package genericds
 
 import (
-	"bytes"
 	"errors"
-	"fmt"
 )
 
 type binaryTreeNode struct {
@@ -14,9 +12,9 @@ type binaryTreeNode struct {
 type Visitor func(interface{})
 
 type BinaryTree interface {
-	InorderTraverse(visitor Visitor) string
-	PreorderTraverse(visitor Visitor) string
-	PostorderTraverse(visitor Visitor) string
+	InorderTraverse(visitor Visitor)
+	PreorderTraverse(visitor Visitor)
+	PostorderTraverse(visitor Visitor)
 
 	SetChildren(right, left BinaryTree) error
 	RightChild() BinaryTree
@@ -59,54 +57,35 @@ func NewBinaryTree(value interface{}) BinaryTree {
 	return &binaryTreeNode{Value: value}
 }
 
-func (b *binaryTreeNode) PreorderTraverse(visitor Visitor) string {
-	buffer := bytes.Buffer{}
-	buffer.WriteString(fmt.Sprint(b.Value))
+func (b *binaryTreeNode) PreorderTraverse(visitor Visitor) {
 	visitor(b.Value)
 	if b.Right != nil {
-		buffer.WriteString(", ")
-		buffer.WriteString(b.RightChild().PreorderTraverse(visitor))
+		b.RightChild().PreorderTraverse(visitor)
 	}
 	if b.LeftChild() != nil {
-		buffer.WriteString(", ")
-		buffer.WriteString(b.LeftChild().PreorderTraverse(visitor))
+		b.LeftChild().PreorderTraverse(visitor)
 	}
-
-	return buffer.String()
 }
 
-func (b *binaryTreeNode) InorderTraverse(visitor Visitor) string {
-	buffer := bytes.Buffer{}
+func (b *binaryTreeNode) InorderTraverse(visitor Visitor) {
 
 	if b.RightChild() != nil {
-		buffer.WriteString(b.RightChild().InorderTraverse(visitor))
-		buffer.WriteString(", ")
+		b.RightChild().InorderTraverse(visitor)
 	}
-	buffer.WriteString(fmt.Sprint(b.Value))
 	visitor(b.Value)
 
 	if b.LeftChild() != nil {
-		buffer.WriteString(", ")
-		buffer.WriteString(b.LeftChild().InorderTraverse(visitor))
+		b.LeftChild().InorderTraverse(visitor)
 	}
-	return buffer.String()
 }
 
-func (b *binaryTreeNode) PostorderTraverse(visitor Visitor) string {
-	buffer := bytes.Buffer{}
+func (b *binaryTreeNode) PostorderTraverse(visitor Visitor) {
 
 	if b.RightChild() != nil {
-		buffer.WriteString(b.RightChild().PostorderTraverse(visitor))
-		buffer.WriteString(" ")
+		b.RightChild().PostorderTraverse(visitor)
 	}
-
 	if b.LeftChild() != nil {
-		buffer.WriteString(" ")
-		buffer.WriteString(b.LeftChild().PostorderTraverse(visitor))
+		b.LeftChild().PostorderTraverse(visitor)
 	}
-
-	buffer.WriteString(fmt.Sprint(b.Value))
 	visitor(b.Value)
-
-	return buffer.String()
 }
